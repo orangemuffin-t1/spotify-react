@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import logo from '../logo.svg';
 import '../styles/App.css';
+import Player from './Player.js'
 
 import { authEndpoint, clientId, redirectUri, scopes } from "./config.js"
 
@@ -8,8 +9,9 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      loggedIn: false,
-      results: ''
+      item: "",
+      progress_ms: 0,
+      results: ""
     };
   }
   componentDidMount() {
@@ -41,6 +43,11 @@ class App extends Component {
         this.setState({
           results: result.item.name + " by" + result.item.artists.map((artist) => " " + artist.name)
         });
+      },
+      (error) => {
+        this.setState({
+          results: "No Music Playing..."
+        });
       }
     );
   }
@@ -49,15 +56,16 @@ class App extends Component {
     return(
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           {!this.state.loggedIn && (
-            <a className="btn login-btn" 
-              href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`}
-            > Login to Spotify </a>
+            <div>
+              <a className="btn login-btn" 
+                href={`${authEndpoint}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`}
+              > Login to Spotify </a>
+            </div>
           )}
 
           {this.state.loggedIn && (
-            <h2>{this.state.results}</h2>
+            <Player item={this.state.results} />
           )}
         </div>
       </div>
